@@ -4,7 +4,7 @@ import json
 import random
 import string
 
-from bigbreaker.common.system_webdriver import SystemWebdriver
+from breaker_core.common.system_webdriver import SystemWebdriver
 
 class ToolsIdentity:
 

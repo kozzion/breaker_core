@@ -3,7 +3,7 @@ import sys
 import json
 import time
 
-from bigbreaker.common.system_webdriver import SystemWebdriver
+from breaker_core.common.system_webdriver import SystemWebdriver
 
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.common.by import By

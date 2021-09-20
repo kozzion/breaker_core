@@ -34,17 +34,55 @@ class SystemWebdriver(object):
         
     @staticmethod
     def await_is_present(webdriver, name_class, timeout_s=20, verbose=False):
-        list_element = webdriver.find_elements_by_class_name(name_class)
+        list_element = webdriver.find_elements(By.CLASS_NAME, name_class)
         for i in range(int(timeout_s/0.1)):
-            list_element = webdriver.find_elements_by_class_name(name_class)
+            list_element = webdriver.find_elements(By.CLASS_NAME, name_class)
             if 0 < len(list_element):
-                return True
+                return True, list_element[0]
+                
 
             time.sleep(0.1)
             if verbose:
                 print('sleep')
                 sys.stdout.flush()
-        return False
+        return False, None
+
+    @staticmethod
+    def find_elements_by_class_name_any(source_element, list_name_class):
+        list_element = []
+        for name_class in list_name_class:
+            list_element.extend(source_element.find_elements(By.CLASS_NAME, name_class))
+        return list_element  
+      
+    @staticmethod
+    def await_is_present(source_element, name_class, timeout_s=20, verbose=False):
+        list_element = SystemWebdriver.find_elements_by_class_name_any(source_element, [name_class])
+        for i in range(int(timeout_s/0.1)):
+            list_element = SystemWebdriver.find_elements_by_class_name_any(source_element, [name_class])
+            if 0 < len(list_element):
+                return True, list_element[0]
+            
+            time.sleep(0.1)
+            if verbose:
+                print('sleep')
+                sys.stdout.flush()
+        return False, None
+
+
+    @staticmethod
+    def await_is_present_any(source_element, list_name_class, timeout_s=20, verbose=False):
+        list_element = SystemWebdriver.find_elements_by_class_name_any(source_element, list_name_class)
+        for i in range(int(timeout_s/0.1)):
+            list_element = SystemWebdriver.find_elements_by_class_name_any(source_element, list_name_class)
+            if 0 < len(list_element):
+                return True, list_element[0]
+                
+
+            time.sleep(0.1)
+            if verbose:
+                print('sleep')
+                sys.stdout.flush()
+        return False, None
 
     @staticmethod
     def open_url(webdriver, url):    

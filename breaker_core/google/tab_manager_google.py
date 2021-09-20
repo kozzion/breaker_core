@@ -3,7 +3,7 @@ import sys
 import json
 import time
 
-from bigbreaker.common.system_webdriver import SystemWebdriver
+from breaker_core.common.system_webdriver import SystemWebdriver
 
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.common.by import By
@@ -11,8 +11,9 @@ from selenium.webdriver.common.keys import Keys
 
 class TabManagerGoogle:
 
-    def __init__(self, webdriver, window_handle):
+    def __init__(self, config, webdriver, window_handle):
         super(TabManagerGoogle, self).__init__()
+        self.config = config
         self.webdriver = webdriver
         self.window_handle = window_handle
         self.current_url = ''

@@ -2,6 +2,7 @@ import os
 import sys
 import json
 import pickle as pkl
+
 class LinkedinPerson:
             
     def linkedin_person_save_pkl(config, id_linkedin_person, linkedin_person):

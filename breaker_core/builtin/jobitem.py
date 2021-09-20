@@ -2,6 +2,9 @@
 import os
 import sys
 import json
+from datetime import date
+from docx2pdf import convert
+import zipfile
 
 class Jobitem:
 
@@ -43,3 +46,83 @@ class Jobitem:
         for id_jobitem in list_id_jobitem:
             list_jobitem.append(Jobitem.jobitem_load(config, id_jobitem))
         return list_jobitem
+    
+    @staticmethod
+    def coverletterdocx_load_path(config, id_jobitem):
+        path_dir_data = config['path_dir_data']  
+        return os.path.join(path_dir_data, 'builtin', 'jobitem', id_jobitem, 'cover_letter.docx')
+            
+    @staticmethod
+    def coverletterpdf_load_path(config, id_jobitem):
+        path_dir_data = config['path_dir_data']  
+        return os.path.join(path_dir_data, 'builtin', 'jobitem', id_jobitem, 'cover_letter.pdf')
+
+
+    @staticmethod
+    def docx_replace(path_file_docx_source, path_file_docx_target, dict_replace):
+        zipfile_source = zipfile.ZipFile(path_file_docx_source, 'r')
+        zipfile_target = zipfile.ZipFile(path_file_docx_target, 'w')
+        for item in zipfile_source.infolist():
+            buffer = zipfile_source.read(item.filename)
+            if (item.filename == 'word/document.xml'):
+                text = buffer.decode("utf-8")
+                # index_end = 0
+                # list_part = []
+                # while True:
+                #     index_start = text.find('<w:t>', index_end + 1)
+                #     index_end = text.find('</w:t>', index_end + 1)
+                #     if index_end == -1:
+                #         break 
+                #     else:
+                        
+                #         part = text[index_start + 5: index_end]
+                #         list_part.append(part)
+                #         if 0 < len(part.strip()): 
+                #             print(part)
+
+                for text_replace in dict_replace:
+                     
+                    count_replace = dict_replace[text_replace][0]
+                    text_replace_with = dict_replace[text_replace][1]
+                    if text.count(text_replace) != count_replace:
+
+                        with open('xml.txt', 'w') as file:
+                            file.write(text)
+
+                        raise Exception('replacement count incorrect for: "' + text_replace  + '" expected ' + str(count_replace) + ' found ' + str(text.count(text_replace)))
+                    else:
+                        text = text.replace(text_replace, text_replace_with)
+                buffer = text.encode("utf-8")
+            zipfile_target.writestr(item, buffer)
+        zipfile_target.close()
+        zipfile_source.close()
+
+
+    @staticmethod
+    def generate_cover_letter(config, jobitem, identity):
+        path_dir_data = config['path_dir_data']  
+        path_file_docx_source = os.path.join(path_dir_data, 'cover_letter.docx')
+        id_jobitem = jobitem['id_jobitem']
+
+        jobitem = Jobitem.jobitem_load(config, id_jobitem)
+        path_file_docx_target = Jobitem.coverletterdocx_load_path(config, id_jobitem)
+        path_file_pdf = Jobitem.coverletterpdf_load_path(config, id_jobitem)
+
+        # list_sector = Jobitem.sector_load_list()
+        # list_sector = Jobitem.sector_save()
+        # print(jobitem)
+        #sector = 'hospitality'
+
+
+        title = jobitem['title']
+        if ' OR ' in title:
+            title = title.split(' OR ')[0]
+
+        dict_replace = {}
+        dict_replace['#'] = (1, date.today().strftime('%B %d %Y'))
+        dict_replace['$'] = (1, jobitem['name_company'])
+        dict_replace['^'] = (2, title)
+        #dict_replace['*'] = (0, sector)
+
+        Jobitem.docx_replace(path_file_docx_source, path_file_docx_target, dict_replace)
+        convert(path_file_docx_target, path_file_pdf)

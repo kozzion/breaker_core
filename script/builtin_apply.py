@@ -8,29 +8,31 @@ import pathlib
 
 
 sys.path.append('../')
-from bigbreaker.common.tools_identity import ToolsIdentity
-from bigbreaker.common.system_webdriver import SystemWebdriver
-from bigbreaker.google.tab_manager_google import TabManagerGoogle
-from bigbreaker.linkedin.tab_manager_linkedin import TabManagerLinkedin
-from bigbreaker.builtin.jobitem import Jobitem
+from breaker_core.common.tools_identity import ToolsIdentity
+from breaker_core.common.system_webdriver import SystemWebdriver
+from breaker_core.google.tab_manager_google import TabManagerGoogle
+from breaker_core.linkedin.tab_manager_linkedin import TabManagerLinkedin
+from breaker_core.builtin.jobitem import Jobitem
 
 
 with open('config.cfg', 'r') as file:
     config = json.load(file)
 
-id_identity = 'identity_0'
+id_identity = 'identity_jaap_oosterbroek'
 identity = ToolsIdentity.identity_load(config, id_identity)
 webdriver = ToolsIdentity.webdriver_load(config, id_identity)
 handle_google = SystemWebdriver.get_handle(webdriver, 0)
 handle_linkedin = SystemWebdriver.get_handle(webdriver, 1)
-tab_manager_google = TabManagerGoogle(webdriver, handle_google)
-tab_manager_linkedin = TabManagerLinkedin(webdriver, handle_linkedin)
+tab_manager_google = TabManagerGoogle(config, webdriver, handle_google)
+tab_manager_linkedin = TabManagerLinkedin(config, webdriver, handle_linkedin)
 
 list_jobitem = Jobitem.jobitem_load_list(config)
 for jobitem in list_jobitem[9:]:
     jobitem = Jobitem.jobitem_validate(config, jobitem)
+    
     print(jobitem['id_jobitem'])
     print(jobitem['title'])
+
     sys.stdout.flush()
     if (jobitem['want_top_apply'] == "n") or  (jobitem['has_applied'] == "y"):
         continue
@@ -45,6 +47,10 @@ for jobitem in list_jobitem[9:]:
 
     if jobitem['status_apply'] == 'application_closed':
         print('application_closed')
+        continue
+
+    if jobitem['status_apply'] == 'application_complete':
+        print('application_complete')
         continue
 
     querry ='site:www.linkedin.com/jobs'
@@ -66,14 +72,9 @@ for jobitem in list_jobitem[9:]:
 
 
 
-    has_applied = tab_manager_linkedin.action_apply(config, jobitem, url_linkedin)
-    if has_applied:
-        print('has_applied')
-        jobitem['has_applied'] = 'y'
-        #Jobitem.jobitem_save(config, jobitem)
-    else:
-        print('failed')
-    exit()
+    tab_manager_linkedin.action_apply(config, jobitem, url_linkedin, identity)
+    print(jobitem['status_apply'])
+
             # print('do')
             # if ('has_applied'in jobitem):
             #     print(jobitem['has_applied'])
