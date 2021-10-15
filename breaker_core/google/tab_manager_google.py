@@ -4,12 +4,13 @@ import json
 import time
 
 from breaker_core.common.system_webdriver import SystemWebdriver
+from breaker_core.common.tab_manager_base import TabManagerBase
 
 from selenium.webdriver.remote.webdriver import WebDriver
 from selenium.webdriver.common.by import By
 from selenium.webdriver.common.keys import Keys
 
-class TabManagerGoogle:
+class TabManagerGoogle(TabManagerBase):
 
     def __init__(self, config, webdriver, window_handle):
         super(TabManagerGoogle, self).__init__()
@@ -38,5 +39,5 @@ class TabManagerGoogle:
 
     def parse_element_result(self, element_result):
         result = {}
-        result['url'] = element_result.find_element_by_tag_name("a").get_attribute("href")
+        result['url'] = element_result.find_element(By.TAG_NAME, "a").get_attribute("href")
         return result

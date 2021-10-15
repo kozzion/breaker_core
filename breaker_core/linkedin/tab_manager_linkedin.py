@@ -63,23 +63,44 @@ class TabManagerLinkedin(TabManagerBase):
         self.webdriver.find_element(By.ID, 'last-name').send_keys(name_last_0)
         self.webdriver.find_element(By.ID, 'join-form-submit').click()
     
-    def action_apply(self, config, jobitem, url_job, identity):
-
+    def action_apply(self, config, jobitem, tab_manager_google, identity):
         print('action_apply')
+        id_jobitem = jobitem['id_jobitem']
+
+        if not 'url_job' in jobitem:
+            querry ='site:www.linkedin.com/jobs'
+            title = jobitem['title']
+            if ',' in title:
+                title = title.split(',')[0].strip()
+            querry += ' ' + title
+            querry += ' ' + jobitem['name_company']
+            print(querry)
+            url_job = tab_manager_google.action_get_url_first_hit(querry)
+
+        
+            # https://www.linkedin.com/jobs/view/
+            if not 'https://www.linkedin.com/jobs/view/' in url_job:
+                Jobitem.jobitem_status_update(config, id_jobitem, 'application_broken_link')
+                print('application_broken_link')
+                return
+
+            jobitem['url_job'] = url_job
+            Jobitem.jobitem_save(config, id_jobitem, jobitem)
+        else:
+            url_job = jobitem['url_job']
+   
         self.make_active()
         SystemWebdriver.open_url(self.webdriver, url_job)
 
         is_present, element = SystemWebdriver.await_is_present(self.webdriver, 'post-apply-timeline__content', 1)
         if is_present:
-            jobitem['status_apply'] = 'application_complete'
-            Jobitem.jobitem_save(config, jobitem['id_jobitem'], jobitem)
+            Jobitem.jobitem_status_update(config, id_jobitem, 'application_complete')
             print('application_complete')
             return
 
         is_present, element = SystemWebdriver.await_is_present(self.webdriver, 'artdeco-inline-feedback__message', 1)
         if is_present:
-            jobitem['status_apply'] = 'application_closed'
-            Jobitem.jobitem_save(config, jobitem['id_jobitem'], jobitem)
+            Jobitem.jobitem_status_update(config, id_jobitem, 'application_closed')
             print('application_closed')
             return
         
@@ -96,22 +117,18 @@ class TabManagerLinkedin(TabManagerBase):
             option = ToolsInput.promt_option('Apply to this job?', ['Apply never', 'Postpone', 'Apply now', 'Have applied'])
             if option == 'Apply never':
                 print('Apply never')
-                jobitem['status_apply'] = 'application_discarded'
-                Jobitem.jobitem_save(config, jobitem['id_jobitem'], jobitem)
+                Jobitem.jobitem_status_update(config, id_jobitem, 'application_discarded')
                 return
             elif option == 'Postpone':
                 print('Postpone')
-                jobitem['status_apply'] = 'application_postponed'
-                Jobitem.jobitem_save(config, jobitem['id_jobitem'], jobitem)
+                Jobitem.jobitem_status_update(config, id_jobitem, 'application_postponed')
                 return
             elif option == 'Apply now':
                 print('Apply now')
-                jobitem['status_apply'] = 'application_started'
-                Jobitem.jobitem_save(config, jobitem['id_jobitem'], jobitem)
+                Jobitem.jobitem_status_update(config, id_jobitem, 'application_started')
             elif option == 'Have applied':
                 print('Have applied')
-                jobitem['status_apply'] = 'application_complete'
-                Jobitem.jobitem_save(config, jobitem['id_jobitem'], jobitem)
+                Jobitem.jobitem_status_update(config, id_jobitem, 'application_complete')
                 return
             else:
                 raise Exception('Unknown option: ' + option)
@@ -163,6 +180,7 @@ class TabManagerLinkedin(TabManagerBase):
         print('action_complete_application_external')
         print('loaded')
         print('wait2')
+        sys.stdout.flush()
         time.sleep(2)
 
         window_handle_new = self.webdriver.window_handles[-1]
@@ -170,23 +188,39 @@ class TabManagerLinkedin(TabManagerBase):
         self.webdriver.switch_to.window(str(window_handle_new))
         print(self.webdriver.title)
         print(self.webdriver.current_url)
+        SystemWebdriver.await_is_loaded(self.webdriver)
+        print('wait220')
+        sys.stdout.flush()
+        time.sleep(2)
 
+        
+        list_iframe = self.webdriver.find_elements(By.ID, 'grnhse_iframe')
+        source_element = self.webdriver 
+        if 0 < len(list_iframe):
+            print('found_linkedin_iframe')
+            # source_element = list_iframe[0]
+            self.webdriver.switch_to.frame(list_iframe[0])
 
-        list_input = self.webdriver.find_elements(By.TAG_NAME, 'input')
+        list_input = source_element.find_elements(By.TAG_NAME, 'input')
         print(len(list_input))
         for element_input in list_input:
             self.action_fill_input(element_input, jobitem, identity)
             
-        list_element_select = self.webdriver.find_elements(By.TAG_NAME, 'select')
+        list_element_select = source_element.find_elements(By.TAG_NAME, 'select')
         print(len(list_element_select))
         for element_select in list_element_select:
             self.action_fill_input(element_select, jobitem, identity)
 
-        list_element_a = self.webdriver.find_elements(By.TAG_NAME, 'a')
+        list_element_a = source_element.find_elements(By.TAG_NAME, 'a')
+        print(len(list_element_a))
         for element_a in list_element_a:
             self.action_fill_input(element_a, jobitem, identity)
+            
+        # element_question = source_element.find_element(By.ID, 'job_application_answers_attributes_1_text_value')
+        # print(self.find_descibing_list_text(element_question))
 
     def action_fill_input(self, element_input, jobitem, identity):
+     
      
         # input section
         type = self.fill_input_type(element_input)
@@ -222,6 +256,19 @@ class TabManagerLinkedin(TabManagerBase):
             element_input.send_keys(identity['name_first_0'] + ' ' + identity['name_last_0'])
             return
 
+        if type == 'input_can_work':
+            element_input.send_keys('No')
+            return
+
+        if type == 'input_salary_expectations':
+            element_input.send_keys('150000USD per year')
+            return
+
+
+        if type == 'input_personal_website':
+            element_input.send_keys(identity['url_github'])
+            return
+
         # select section    
         if type == 'select_can_work':
             Select(element_input).select_by_visible_text('Yes')
@@ -250,6 +297,9 @@ class TabManagerLinkedin(TabManagerBase):
         if type == 'select_disability':
             Select(element_input).select_by_visible_text("No, I don't have a disability, or a history/record of having a disability")
             return
+
+
+
             
         if type == 'button_attach_resume':
             path_file_resume = 'C:\\project\\data\\data_breaker\\CV_20210809_us.pdf'
@@ -263,7 +313,9 @@ class TabManagerLinkedin(TabManagerBase):
 
     def fill_input_type(self, element_input):
         element_id = element_input.get_attribute('id')
-
+        if element_input.get_attribute('type') == 'hidden': 
+            return 'unknown'
+            
         if 'first_name' in element_id:
             return 'first_name'
 
@@ -279,22 +331,23 @@ class TabManagerLinkedin(TabManagerBase):
         if 'phone' in element_id:
             return 'phone'
 
-        if 'job_application_answers_attributes_2_text_value' in element_id:
-            return 'input_url_linkedin'
+        
+        # if 'job_application_answers_attributes_2_text_value' in element_id:
+        #     return 'input_url_linkedin'
 
-        if 'job_application_answers_attributes_4_text_value' in element_id:
-            return 'input_found_where'   
+        # if 'job_application_answers_attributes_4_text_value' in element_id:
+        #     return 'input_found_where'   
 
-        if 'job_application_answers_attributes_5_text_value' in element_id:
-            return 'input_preferred_name'   
+        # if 'job_application_answers_attributes_5_text_value' in element_id:
+        #     return 'input_preferred_name'   
 
-        # select
+        # # select
 
-        if 'job_application_answers_attributes_0_boolean_value' in element_id:
-            return 'select_can_work'
+        # if 'job_application_answers_attributes_0_boolean_value' in element_id:
+        #     return 'select_can_work'
 
-        if 'job_application_answers_attributes_1_boolean_value' in element_id:
-            return 'select_need_visa'
+        # if 'job_application_answers_attributes_1_boolean_value' in element_id:
+        #     return 'select_need_visa'
 
 
 
@@ -320,6 +373,38 @@ class TabManagerLinkedin(TabManagerBase):
                 return 'button_attach_resume'      
             if self.attribute_contains(element_input, 'aria-labelledby', 'cover_letter'):
                 return 'button_attach_cover'
+
+        if len(element_id.strip()) == 0:
+            return 'unknown'
+
+        if element_id == 'submit_app':
+            return 'unknown'
+
+   
+        list_description = self.find_descibing_list_text(element_input)
+        if ToolsInput.match(list_description, 'LinkedIn Profile'): 
+            return 'input_url_linkedin'
+        
+        if ToolsInput.match(list_description, 'hear about this job'): 
+            return 'input_found_where'
+
+        if ToolsInput.match(list_description, 'employer without restrictions?'): 
+            return 'input_can_work'
+
+        if ToolsInput.match(list_description, 'What are your current salary expectations'): 
+            return 'input_salary_expectations'
+            
+        if ToolsInput.match(list_description, 'name or nickname?'): 
+            return 'input_preferred_name'
+
+        if ToolsInput.match(list_description, 'Website'): 
+            return 'input_personal_website'
+            
+            
+
+        print(element_id)
+        print(list_description)     
+        return 'unknown'
 
     def attribute_contains(self, element, atribute, contain):
         value = element.get_attribute(atribute)
@@ -394,8 +479,9 @@ class TabManagerLinkedin(TabManagerBase):
         SystemWebdriver.await_is_clickable(self.webdriver, "//button[@aria-label='Submit application']")
         promt = ToolsInput.promt_option('complete application?', ['Yes', 'No'])
         if promt == 'Yes':
-            self.webdriver.find_element(By.XPATH, "//button[@aria-label='Submit application']")
+            print('application_complete')
+            Jobitem.jobitem_status_update(self.config, jobitem['id_jobitem'], 'application_complete')
+            self.webdriver.find_element(By.XPATH, "//button[@aria-label='Submit application']").click()
         else:
             print('application_postponed')
-            jobitem['status_apply'] = 'application_postponed'
-            Jobitem.jobitem_save(self.config, jobitem['id_jobitem'], jobitem)
+            Jobitem.jobitem_status_update(self.config, jobitem['id_jobitem'], 'application_postponed')

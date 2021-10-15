@@ -29,51 +29,34 @@ tab_manager_linkedin = TabManagerLinkedin(config, webdriver, handle_linkedin)
 list_jobitem = Jobitem.jobitem_load_list(config)
 for jobitem in list_jobitem[9:]:
     jobitem = Jobitem.jobitem_validate(config, jobitem)
-    
-    print(jobitem['id_jobitem'])
+    id_jobitem = jobitem['id_jobitem']
+    print()
+    print()
+    print(id_jobitem)
+    print(jobitem['name_company'])
     print(jobitem['title'])
-
-    sys.stdout.flush()
-    if (jobitem['want_top_apply'] == "n") or  (jobitem['has_applied'] == "y"):
+    status = Jobitem.jobitem_status_message(config, id_jobitem)
+    print(status)
+    if status == 'application_broken_link':
         continue
 
-    if jobitem['status_apply'] == 'url_linkedin_broken':
-        print('url_linkedin_broken')
+    if status == 'application_closed':
         continue
 
-    # if jobitem['status_apply'] == 'application_external':
-    #     print('application_external')
-    #     continue
-
-    if jobitem['status_apply'] == 'application_closed':
-        print('application_closed')
+    if status == 'application_complete':
         continue
-
-    if jobitem['status_apply'] == 'application_complete':
-        print('application_complete')
-        continue
-
-    querry ='site:www.linkedin.com/jobs'
-    title = jobitem['title']
-    if ',' in title:
-        title = title.split(',')[0].strip()
-    querry += ' ' + title
-    querry += ' ' + jobitem['name_company']
-    print(querry)
-    url_linkedin = tab_manager_google.action_get_url_first_hit(querry)
-
     
-    # https://www.linkedin.com/jobs/view/
-    if not 'https://www.linkedin.com/jobs/view/' in url_linkedin:
-        print('url_linkedin_broken')
-        jobitem['status_apply'] = 'url_linkedin_broken'
-        Jobitem.jobitem_save(config, jobitem['id_jobitem'], jobitem)
+    if status == 'application_postponed':
+        continue
+
+    if status == 'application_discarded':
         continue
 
 
 
-    tab_manager_linkedin.action_apply(config, jobitem, url_linkedin, identity)
-    print(jobitem['status_apply'])
+    tab_manager_linkedin.action_apply(config, jobitem, tab_manager_google, identity)
+    print(Jobitem.jobitem_status_message(config, id_jobitem))
+    exit()
 
             # print('do')
             # if ('has_applied'in jobitem):

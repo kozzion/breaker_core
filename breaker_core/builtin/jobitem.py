@@ -2,6 +2,7 @@
 import os
 import sys
 import json
+import time
 from datetime import date
 from docx2pdf import convert
 import zipfile
@@ -10,6 +11,7 @@ class Jobitem:
 
     @staticmethod
     def jobitem_validate(config, jobitem):
+        
         if not 'status_apply' in jobitem:
             if jobitem['has_applied'] == "y":
                 jobitem['status_apply'] = 'has_applied'
@@ -17,8 +19,27 @@ class Jobitem:
                 jobitem['status_apply'] = 'want_top_apply' 
             else:
                 jobitem['status_apply'] = 'gathered'
+
+        if not 'list_status' in jobitem:
+            timestamp = int(time.time())
+            jobitem['list_status'] = [{'timestamp':timestamp, 'message':jobitem['status_apply'] }]
         Jobitem.jobitem_save(config, jobitem['id_jobitem'], jobitem)
         return jobitem
+
+    @staticmethod
+    def jobitem_create(config, id_jobitem, ):
+        path_dir_data = config['path_dir_data']  
+        path_dir_jobitem = os.path.join(path_dir_data, 'builtin', 'jobitem', id_jobitem)
+        path_file_jobitem = os.path.join(path_dir_data, 'builtin', 'jobitem', id_jobitem, 'jobitem.json')
+        if not os.path.isdir(path_dir_jobitem):
+            os.makedirs(path_dir_jobitem)
+        jobitem = {}
+        jobitem['list_status'] = []
+
+        timestamp = int(time.time())
+        jobitem['list_status'].append({'timestamp':timestamp,'message':'application_scaped'})
+        with open(path_file_jobitem, 'w') as file:
+            json.dump(jobitem, file)
 
     @staticmethod
     def jobitem_save(config, id_jobitem, json_jobitem):
@@ -29,6 +50,20 @@ class Jobitem:
             os.makedirs(path_dir_jobitem)
         with open(path_file_jobitem, 'w') as file:
             json.dump(json_jobitem, file)
+
+
+    @staticmethod
+    def jobitem_status_update(config, id_jobitem, message_status):
+        jobitem = Jobitem.jobitem_load(config, id_jobitem)
+        timestamp = int(time.time())
+        jobitem['list_status'].append({'timestamp':timestamp,'message':message_status})
+        Jobitem.jobitem_save(config, id_jobitem, jobitem)
+
+
+    @staticmethod
+    def jobitem_status_message(config, id_jobitem):
+        jobitem = Jobitem.jobitem_load(config, id_jobitem)
+        return jobitem['list_status'][-1]['message']
 
     @staticmethod
     def jobitem_load(config, id_jobitem):

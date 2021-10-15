@@ -1,3 +1,4 @@
+import sys
 import time
 from pynput.keyboard import Key, Controller
 from selenium.webdriver.common.by import By
@@ -38,14 +39,67 @@ class TabManagerBase:
 
         return list_element_selected
 
-    def find_parent(self, element_source):
-        return element_source.find_element_by_xpath('..')
+    @staticmethod
+    def find_parent(element):
+        return element.find_element(By.XPATH, '..')
+
+    @staticmethod
+    def find_children(element):
+        return element.find_elements(By.XPATH, './/*')
+
+    @staticmethod
+    def strip_tags(element):
+        html = element.get_attribute("innerHTML")
+        list_string = []
+        index_current = 0
+        level_open = 0
+        while True:
+            index_open = html.find('<', index_current)
+            index_close = html.find('>', index_current)
+            if index_open == -1 and index_close == -1:
+                if level_open == 0:
+                    string = html[index_current:].strip()
+                    if 0 < len(string):
+                        list_string.append(string)
+                return list_string
+            elif index_open == -1:
+                level_open -= 1
+                index_current = index_close + 1
+            elif index_close == -1:
+                if level_open == 0:
+                    string = html[index_current:index_open].strip()
+                    if 0 < len(string):
+                        list_string.append(string)
+                level_open += 1
+                index_current = index_open + 1
+            elif index_open < index_close:
+                if level_open == 0:
+                    string = html[index_current:index_open].strip()
+                    if 0 < len(string):
+                        list_string.append(string)
+                level_open += 1
+                index_current = index_open + 1
+            else: 
+                level_open -= 1
+                index_current = index_close + 1
 
     def find_descibing_list_text(self, element_source, recursion_limit=5):
         element_current = element_source
         for i in range(recursion_limit):
-            list_element = element_current.find_elements(By.TAG_NAME, 'span')
-            if len(list_element) == 0:
-                element_current = self.find_parent(element_current)
+            list_text = []
+            list_text.extend(TabManagerBase.strip_tags(element_current))
+            if 0 < len(list_text):
+                return list_text
             else:
-                return [element.get_attribute("innerHTML") for element in list_element]
+                list_element = []
+                list_element.extend(element_current.find_elements(By.TAG_NAME, 'span'))
+                list_element.extend(element_current.find_elements(By.TAG_NAME, 'label'))
+                for element in list_element:
+                    list_text.extend(TabManagerBase.strip_tags(element))
+                
+                if 0 < len(list_text):
+                    return list_text
+                element_current = self.find_parent(element_current)
+        return []
+
+

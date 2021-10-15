@@ -1,2 +1,3 @@
 *.pyc
 *.cfg
+breaker_core.egg-info/

@@ -3,8 +3,8 @@ import sys
 import json
 import time
 
-from bigbreaker.common.system_webdriver import SystemWebdriver
-from bigbreaker.onionmail.tab_manager_onionmail import TabManagerOnionmail
+from breaker_core.common.system_webdriver import SystemWebdriver
+from breaker_core.onionmail.tab_manager_onionmail import TabManagerOnionmail
 
 from selenium.webdriver.support.select import Select
 from selenium.webdriver.remote.webdriver import WebDriver

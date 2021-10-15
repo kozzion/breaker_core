@@ -92,7 +92,7 @@ class SystemWebdriver(object):
 
     @staticmethod
     def find_first_tag_with_innerhtml(webdriver, tag, inner_html):
-        list_element_button = webdriver.find_elements_by_tag_name(tag)
+        list_element_button = webdriver.find_elements(By.TAG_NAME, tag)
         for element_button in list_element_button:
             if element_button.get_attribute('innerHTML') == inner_html:
                 return element_button
