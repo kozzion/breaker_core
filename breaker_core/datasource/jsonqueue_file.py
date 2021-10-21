@@ -70,13 +70,13 @@ class JsonqueueFile(Jsonqueue):
 
 
     def to_dict(self):
-        dict_bytearraysource = {}
-        dict_bytearraysource['type_jsonqueue'] = 'JsonqueueFile'
-        dict_bytearraysource['path_dir'] = str(self.path_dir.absolute())
-        return dict_bytearraysource
+        dict_bytessource = {}
+        dict_bytessource['type_jsonqueue'] = 'JsonqueueFile'
+        dict_bytessource['path_dir'] = str(self.path_dir.absolute())
+        return dict_bytessource
 
     @staticmethod
-    def from_dict(dict_bytearraysource):
-        if not dict_bytearraysource['type_jsonqueue'] == 'JsonqueueFile':
+    def from_dict(dict_bytessource):
+        if not dict_bytessource['type_jsonqueue'] == 'JsonqueueFile':
             raise Exception('incorrect_dict_type')
-        return JsonqueueFile(Path(dict_bytearraysource['path_dir']))
+        return JsonqueueFile(Path(dict_bytessource['path_dir']))

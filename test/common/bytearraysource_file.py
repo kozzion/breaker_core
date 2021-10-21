@@ -1,9 +1,9 @@
-from breaker_core.common.bytearraysource_generator_file import BytearraysourceGeneratorFile
-from breaker_core.common.bytearraysource_file import BytearraysourceFile
+from breaker_core.common.bytessource_generator_file import BytessourceGeneratorFile
+from breaker_core.common.bytessource_file import BytessourceFile
 from pathlib import Path
 
 path_dir_test = Path('./test')
-generator = BytearraysourceGeneratorFile(path_dir_test)
+generator = BytessourceGeneratorFile(path_dir_test)
 bytearray_source = generator.generate(['result.wav'])
 print(bytearray_source.exists())
 bytearray_source.save(bytearray('test'.encode('utf-8')))
@@ -12,7 +12,7 @@ bytearray = bytearray_source.load()
 print(bytearray)
 bytearray_source.delete()
 print(bytearray_source.exists())
-# class BytearraysourceFile(BytearraysourceBase):
+# class BytessourceFile(BytessourceBase):
 
 #     def __init__(self, path_file:Path) -> None:
 #         self.path_file = path_file
@@ -29,13 +29,13 @@ print(bytearray_source.exists())
 #             return file.read()
 
 #     def to_dict(self):
-#         dict_bytearraysource = {}
-#         dict_bytearraysource['type_bytearraysource'] = 'BytearraysourceFile'
-#         dict_bytearraysource['path_file'] = str(self.path_file)
-#         return dict_bytearraysource
+#         dict_bytessource = {}
+#         dict_bytessource['type_bytessource'] = 'BytessourceFile'
+#         dict_bytessource['path_file'] = str(self.path_file)
+#         return dict_bytessource
 
 #     @staticmethod
-#     def from_dict(self, dict_bytearraysource):
-#         if not dict_bytearraysource['type_bytearraysource'] == 'BytearraysourceFile':
+#     def from_dict(self, dict_bytessource):
+#         if not dict_bytessource['type_bytessource'] == 'BytessourceFile':
 #             raise Exception('incorrect_dict_type')
-#         return BytearraysourceFile(dict_bytearraysource['path_file'])
+#         return BytessourceFile(dict_bytessource['path_file'])

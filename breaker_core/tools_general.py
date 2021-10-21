@@ -137,3 +137,16 @@ class ToolsGeneral(object):
 # o   
 # ParseResult(scheme='http', netloc='www.cwi.nl:80', path='/%7Eguido/Python.html',
 #             params='', query='', fragment='')
+    
+    @staticmethod
+    def str_is_int(str_value:str):
+        try:
+            int(str_value)
+            return True
+        except ValueError:
+            return False
+
+    
+    @staticmethod
+    def sha256_dict_json(dict_json:dict) -> 'str':
+        return hashlib.sha256(json.dumps(dict_json).encode('utf-8')).hexdigest()

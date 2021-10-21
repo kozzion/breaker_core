@@ -1,6 +1,7 @@
 class Jsonqueue:
 
     def __init__(self) -> None:
+        super(Jsonqueue, self).__init__()
         pass
 
     # def capacity(self) -> int:
@@ -9,13 +10,13 @@ class Jsonqueue:
     # def count(self) -> int:
     #     raise NotImplementedError()
 
-    def dequeue(self) -> dict:
+    def dequeue(self) -> 'dict':
         raise NotImplementedError()
 
-    def dequeue_blocking(self, timeout_ms:int) -> dict:
+    def dequeue_blocking(self, timeout_ms:int) -> 'dict':
         raise NotImplementedError()
 
-    def enqueue(self, dict:dict) -> None:
+    def enqueue(self, dict:'dict') -> None:
         raise NotImplementedError()
 
 
@@ -23,7 +24,7 @@ class Jsonqueue:
         raise NotImplementedError()
 
     @staticmethod
-    def from_dict(dict_jsonqueue):
+    def from_dict(dict_jsonqueue:'dict') -> 'Jsonqueue':
         if dict_jsonqueue['type_jsonqueue'] == 'JsonqueueFile':
             from breaker_core.datasource.jsonqueue_file import JsonqueueFile
             return JsonqueueFile.from_dict(dict_jsonqueue)
