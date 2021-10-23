@@ -1,7 +1,9 @@
 import json
+import hashlib
 import pickle
+import sys
 from typing import List
-from pathlib import Path
+
 class Bytessource(object):
 
     def __init__(self) -> None:
@@ -23,11 +25,7 @@ class Bytessource(object):
         return self.write(json.dumps(dict_object).encode('utf-8'))
 
     def read_pickle(self) -> 'dict':
-        #todo simplyfy
-        path_file_temp = Path('temp')
-        path_file_temp.write_bytes(self.read())
-        with open(path_file_temp, 'rb') as file:
-            return pickle.load(file)
+        return pickle.loads(self.read())
 
     def write_pickle(self, dict_object:'dict') -> 'dict':
         return self.write(pickle.dumps(dict_object))
@@ -40,6 +38,50 @@ class Bytessource(object):
 
     def list_shallow(self):        
         raise NotImplementedError()
+
+    def list_deep(self):
+        raise NotImplementedError()
+
+    @staticmethod
+    def list_list_key_to_dict_hierarchy(list_list_key):
+        dict_root = {}
+        for list_key in list_list_key:
+            dict = dict_root
+            for key in list_key:
+                if not key in dict:
+                    dict[key] = {}
+                dict = dict[key]
+        return dict_root
+
+    @staticmethod
+    def list_list_key_to_dict_hash(list_list_key):
+        dict_hash = {}
+        for list_key in list_list_key:
+            name_object = '/'.join(list_key)
+            hash_object = hashlib.sha256(name_object.encode('utf-8')).hexdigest()
+            dict_hash[hash_object] = list_key
+        return dict_hash
+
+    
+
+    def sync_to(self, other:'Bytessource'):
+        dict_self = Bytessource.list_list_key_to_dict_hash(self.list_deep())
+        dict_other = Bytessource.list_list_key_to_dict_hash(other.list_deep())
+        for hash_object in dict_self:
+            child_self = self.join(dict_self[hash_object])
+            child_other = other.join(dict_self[hash_object])
+            if not hash_object in dict_other:                
+                child_other.write(child_self.read())
+                print('write')
+            else:
+                print('update todo')
+                del dict_other[hash_object]
+            sys.stdout.flush()
+        for hash_object in dict_other:
+            other.join(dict_other[hash_object]).delete()
+            print('delete')
+            sys.stdout.flush()
+                
 
     def validate_list_key(self, list_key:List[str]):
             if not isinstance(list_key, list):
@@ -84,7 +126,7 @@ class Bytessource(object):
             from breaker_aws.datasource.bytessource_s3 import BytessourceS3
             return BytessourceS3.from_dict(dict_bytessource)
         else:
-            raise Exception('incorrect_dict_type: ' + type_bytessource)
+            raise Exception('Uknown type_bytessource: ' + type_bytessource)
 
 
 

@@ -18,8 +18,6 @@ class BytessourceFile(Bytessource):
         return self.path.is_file()
 
     def write(self, bytearray_object:bytearray) -> None:
-        print('here')
-        print(self.path)
         if not self.path.parent.is_dir():
             os.makedirs(self.path.parent, exist_ok=True)
 
@@ -42,22 +40,31 @@ class BytessourceFile(Bytessource):
         return BytessourceFile(self.path_dir_root, list_key_extended)
 
     def list_shallow(self, prefix='') -> 'List[List[str]]':
-        if self.path.is_dir():
+        if self.path.is_file():
+            return []
+            #TODO also also deal with partial keys?
+        else:
             list_list_key = []
             for name_file in os.listdir(self.path):
                 if name_file.startswith(prefix):
                     list_list_key.append([name_file])
             return list_list_key
-        else:
-            return []
 
     def list_deep(self, prefix='') -> 'List[List[str]]':
-        if self.path.is_dir():
+        if self.path.is_file():
+            return []
+        else:
             list_list_key = []
-            for name_file in os.listdir(self.path):
-                if prefix in name_file:
-                    list_list_key.append([name_file])
-                #TODO also go down directories
+            for path_dir, list_name_dir, list_name_file in os.walk(self.path):
+                path_relative = path_dir[len(str(self.path)) + 1:]
+                if len(path_relative) == 0:
+                    list_key_dir = []
+                else:
+                    list_key_dir = path_dir[len(str(self.path)) + 1:].split(os.path.sep)
+                for name_file in list_name_file:
+                    list_file = list_key_dir.copy()
+                    list_file.append(name_file)
+                    list_list_key.append(list_file)
             return list_list_key
 
     def list_for_prefix(self, list_key_prefix:List[str]) -> 'List[List[str]]':
