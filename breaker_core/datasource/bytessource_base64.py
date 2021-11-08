@@ -6,7 +6,8 @@ from breaker_core.datasource.bytessource import Bytessource
 
 class BytessourceBase64(Bytessource):
 
-    def __init__(self, str_base64) -> None:
+    def __init__(self, config:dict, str_base64) -> None:
+        super().__init__(config)
         self.str_base64 = str_base64
 
     def exists(self) -> bool:
@@ -40,8 +41,8 @@ class BytessourceBase64(Bytessource):
         return dict_bytessource
 
     @staticmethod
-    def from_dict(dict_bytessource) -> 'Bytessource':
+    def from_dict(config:dict, dict_bytessource) -> 'Bytessource':
         if not dict_bytessource['type_bytessource'] == 'BytessourceBase64':
             raise Exception('incorrect_dict_type')
-        return BytessourceBase64(dict_bytessource['str_base64'])
+        return BytessourceBase64(config, dict_bytessource['str_base64'])
 

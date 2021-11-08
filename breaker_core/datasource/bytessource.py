@@ -2,12 +2,15 @@ import json
 import hashlib
 import pickle
 import sys
+import tempfile
+from pathlib import Path
 from typing import List
 
 class Bytessource(object):
 
-    def __init__(self) -> None:
-        pass
+    def __init__(self, config:dict) -> None:
+        super().__init__()
+        self.config = config
 
     def exists(self) -> bool:
         raise NotImplementedError()
@@ -21,6 +24,13 @@ class Bytessource(object):
     def read_json(self) -> 'dict':
         return json.loads(self.read().decode(encoding='utf-8'))
 
+    def read_tempfile(self, suffix='.tmp') -> 'Path':
+        path_file = None
+        with tempfile.NamedTemporaryFile(suffix='.tif', delete=False) as file:
+            file.write(self.read())
+            path_file = Path(file.name)
+        return path_file
+        
     def write_json(self, dict_object:'dict') -> 'dict':
         return self.write(json.dumps(dict_object).encode('utf-8'))
 
@@ -117,14 +127,14 @@ class Bytessource(object):
         raise NotImplementedError()
   
     @staticmethod
-    def from_dict(dict_bytessource) -> 'Bytessource':
+    def from_dict(config, dict_bytessource) -> 'Bytessource':
         type_bytessource = dict_bytessource['type_bytessource']
         if type_bytessource == 'BytessourceFile':
             from breaker_core.datasource.bytessource_file import BytessourceFile
-            return BytessourceFile.from_dict(dict_bytessource)
+            return BytessourceFile.from_dict(config, dict_bytessource)
         elif type_bytessource == 'BytessourceS3':
             from breaker_aws.datasource.bytessource_s3 import BytessourceS3
-            return BytessourceS3.from_dict(dict_bytessource)
+            return BytessourceS3.from_dict(config, dict_bytessource)
         else:
             raise Exception('Uknown type_bytessource: ' + type_bytessource)
 

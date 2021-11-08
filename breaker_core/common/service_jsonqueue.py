@@ -6,8 +6,9 @@ from breaker_core.datasource.bytessource import Bytessource
 
 class ServiceJsonqueue(object):
 
-    def __init__(self, queue_request:Jsonqueue, mode_debug:bool) -> None:
+    def __init__(self, config_breaker:dict, queue_request:Jsonqueue, mode_debug:bool) -> None:
         super().__init__()
+        self.config_breaker = config_breaker
         self.queue_request = queue_request
         self.mode_debug = mode_debug
 
@@ -25,7 +26,7 @@ class ServiceJsonqueue(object):
 
 
             try:
-                bytessource_response = Bytessource.from_dict(dict_request['bytessource_response'])
+                bytessource_response = Bytessource.from_dict(self.config_breaker, dict_request['bytessource_response'])
             except Exception as e:
                 print('Exception while reading request: ' +  str(e))
                 sys.stdout.flush()

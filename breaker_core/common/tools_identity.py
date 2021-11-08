@@ -66,29 +66,24 @@ class ToolsIdentity:
 
         return identity
 
-    def identity_load(config, id_identity):
-        path_dir_data = config['path_dir_data']
+    def identity_load(path_dir_data, id_identity):
         path_file_identity = os.path.join(path_dir_data, 'identity', id_identity, 'identity.json')
         with open(path_file_identity, 'r') as file:
             return json.load(file)
 
-    def identity_has(config, id_identity):
-        path_dir_data = config['path_dir_data']
+    def identity_has(path_dir_data, id_identity):
         path_file_identity = os.path.join(path_dir_data, 'identity', id_identity, 'identity.json')
         return os.path.isfile(path_file_identity)
 
-    def identity_save(config, id_identity, identity):
+    def identity_save(path_dir_data, id_identity, identity):
         if not identity['id_identity'] == id_identity:
             raise Exception()
 
-        path_dir_data = config['path_dir_data']
         path_file_identity = os.path.join(path_dir_data, 'identity', id_identity, 'identity.json')
         with open(path_file_identity, 'w') as file:
             json.dump(identity, file)
 
-    def webdriver_load(config, id_identity):
-        path_dir_data = config['path_dir_data']
-        path_file_webdriver = config['path_file_webdriver']
+    def webdriver_load(path_dir_data, path_file_webdriver, id_identity):
         path_file_session = os.path.join(path_dir_data, 'identity', id_identity, 'session.json')
         path_dir_user_data = os.path.join(path_dir_data, 'identity', id_identity, 'selenium')
         system_webdriver = SystemWebdriver(path_file_webdriver)

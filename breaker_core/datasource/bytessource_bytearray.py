@@ -5,7 +5,8 @@ from breaker_core.datasource.bytessource import Bytessource
 
 class BytessourceBytearray(Bytessource):
 
-    def __init__(self, bytearray:bytearray) -> None:
+    def __init__(self, config:dict, bytearray:bytearray) -> None:
+        super().__init__(config)
         self.bytearray = bytearray
 
     def exists(self) -> bool:
@@ -36,7 +37,7 @@ class BytessourceBytearray(Bytessource):
         raise RuntimeError('bytessource is not serialiazable')
 
     @staticmethod
-    def from_dict(dict_bytessource) -> 'Bytessource':
+    def from_dict(config, dict_bytessource) -> 'Bytessource':
         raise RuntimeError('bytessource is not serialiazable')
 
 

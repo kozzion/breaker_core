@@ -10,7 +10,8 @@ from breaker_core.datasource.jsonqueue import Jsonqueue
 
 class JsonqueueFile(Jsonqueue):
 
-    def __init__(self, path_dir:Path) -> None:
+    def __init__(self, config:dict, path_dir:Path) -> None:
+        super().__init__(config)
         self.path_dir = path_dir
         if self.path_dir.is_file():
             raise Exception(self.path_dir + 'is file')
@@ -76,7 +77,7 @@ class JsonqueueFile(Jsonqueue):
         return dict_bytessource
 
     @staticmethod
-    def from_dict(dict_bytessource):
+    def from_dict(config, dict_bytessource):
         if not dict_bytessource['type_jsonqueue'] == 'JsonqueueFile':
             raise Exception('incorrect_dict_type')
-        return JsonqueueFile(Path(dict_bytessource['path_dir']))
+        return JsonqueueFile(config, Path(dict_bytessource['path_dir']))

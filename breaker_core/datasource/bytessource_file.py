@@ -5,8 +5,8 @@ from breaker_core.datasource.bytessource import Bytessource
 
 class BytessourceFile(Bytessource):
 
-    def __init__(self, path_dir_root:Path, list_key:List[str]=[]) -> None:
-        super(BytessourceFile, self).__init__()
+    def __init__(self, config:dict, path_dir_root:Path, list_key:List[str]=[]) -> None:
+        super().__init__(config)
         self.validate_list_key(list_key)
         self.path_dir_root = path_dir_root
         self.list_key = list_key
@@ -37,7 +37,7 @@ class BytessourceFile(Bytessource):
         self.validate_list_key(list_key)
         list_key_extended = self.list_key.copy()
         list_key_extended.extend(list_key)
-        return BytessourceFile(self.path_dir_root, list_key_extended)
+        return BytessourceFile(self.config, self.path_dir_root, list_key_extended)
 
     def list_shallow(self, prefix='') -> 'List[List[str]]':
         if self.path.is_file():
@@ -104,8 +104,8 @@ class BytessourceFile(Bytessource):
         return dict_bytessource
 
     @staticmethod
-    def from_dict(dict_bytessource) -> 'Bytessource':
+    def from_dict(config:dict, dict_bytessource) -> 'Bytessource':
         if not dict_bytessource['type_bytessource'] == 'BytessourceFile':
             raise Exception('incorrect_dict_type')
-        return BytessourceFile(Path(dict_bytessource['path_dir_root']), dict_bytessource['list_key'])
+        return BytessourceFile(config, Path(dict_bytessource['path_dir_root']), dict_bytessource['list_key'])
 
