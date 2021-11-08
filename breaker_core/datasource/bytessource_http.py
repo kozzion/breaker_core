@@ -7,9 +7,10 @@ from breaker_core.datasource.bytessource import Bytessource
 
 class BytessourceHttp(Bytessource):
 
-    def __init__(self, url:str) -> None:
+    def __init__(self, config:dict, url) -> None:
+        super().__init__(config)
         self.url = url
-
+        
     def exists(self) -> bool:
         return True
 
@@ -41,8 +42,8 @@ class BytessourceHttp(Bytessource):
         return dict_bytessource
 
     @staticmethod
-    def from_dict(dict_bytessource) -> 'Bytessource':
+    def from_dict(config:dict, dict_bytessource) -> 'Bytessource':
         if not dict_bytessource['type_bytessource'] == 'BytessourceHttp':
             raise Exception('incorrect_dict_type')
-        return BytessourceHttp(dict_bytessource['url'])
+        return BytessourceHttp(config, dict_bytessource['url'])
 
