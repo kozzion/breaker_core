@@ -31,6 +31,7 @@ class ServiceJsonqueue(object):
                 print('Exception while reading request: ' +  str(e))
                 sys.stdout.flush()
                 if self.mode_debug:
+                    print('mode_debug')
                     raise e
              
 
@@ -45,6 +46,7 @@ class ServiceJsonqueue(object):
                         'message':'Exception while processing request: ' + str(e)
                 })
                 if self.mode_debug:
+                    print('mode_debug')
                     raise e
 
 
@@ -55,6 +57,7 @@ class ServiceJsonqueue(object):
                 print('Exception writing response ' + str(e))
                 sys.stdout.flush()
                 if self.mode_debug:
+                    print('mode_debug')
                     raise e
 
    
