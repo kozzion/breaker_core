@@ -34,8 +34,9 @@ class ServiceBasic(ServiceJsonqueue):
 if __name__ == '__main__':
     path_file_config_breaker = Path(os.getenv('PATH_FILE_CONFIG_BREAKER', '/config/config.cfg'))
     path_dir_data =  Path(os.getenv('PATH_DIR_DATA_BREAKER', '/data/data_breaker/' ))
-    mode_debug = bool(os.getenv('MODE_DEBUG', 'True'))
-
+    print(os.getenv('MODE_DEBUG', 'False'))
+    mode_debug = os.getenv('MODE_DEBUG', 'False') == 'True'
+    print(mode_debug)
     with open(path_file_config_breaker, 'r') as file:
         config_breaker = json.load(file)
 
