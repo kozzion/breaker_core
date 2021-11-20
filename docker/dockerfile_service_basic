@@ -1,0 +1,24 @@
+FROM python:3.9-slim-buster
+
+RUN apt-get update
+RUN apt-get install git -y
+
+RUN pip install --upgrade pip
+
+WORKDIR /code/
+
+ADD "https://www.random.org/cgi-bin/randbyte?nbytes=10&format=h" skipcache
+
+#TODO install directly from release tags
+RUN git clone https://github.com/kozzion/breaker_core
+RUN git clone https://github.com/kozzion/breaker_aws
+
+WORKDIR /code/breaker_core
+RUN pip3 install -e .
+
+WORKDIR /code/breaker_aws
+RUN pip3 install -e .
+
+# copy config
+WORKDIR /code/breaker_core/service
+CMD [ "python3", "service_basic.py"]

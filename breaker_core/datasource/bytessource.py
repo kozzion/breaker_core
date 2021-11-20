@@ -26,7 +26,7 @@ class Bytessource(object):
 
     def read_tempfile(self, suffix='.tmp') -> 'Path':
         path_file = None
-        with tempfile.NamedTemporaryFile(suffix='.tif', delete=False) as file:
+        with tempfile.NamedTemporaryFile(suffix=suffix, delete=False) as file:
             file.write(self.read())
             path_file = Path(file.name)
         return path_file
@@ -74,7 +74,7 @@ class Bytessource(object):
 
     
 
-    def sync_to(self, other:'Bytessource'):
+    def sync_to(self, other:'Bytessource', delete_missing:bool=False) -> None:
         dict_self = Bytessource.list_list_key_to_dict_hash(self.list_deep())
         dict_other = Bytessource.list_list_key_to_dict_hash(other.list_deep())
         for hash_object in dict_self:
@@ -82,15 +82,17 @@ class Bytessource(object):
             child_other = other.join(dict_self[hash_object])
             if not hash_object in dict_other:                
                 child_other.write(child_self.read())
-                print('write')
+                print('write:')
             else:
                 print('update todo')
                 del dict_other[hash_object]
             sys.stdout.flush()
-        for hash_object in dict_other:
-            other.join(dict_other[hash_object]).delete()
-            print('delete')
-            sys.stdout.flush()
+
+        if delete_missing:
+            for hash_object in dict_other:
+                other.join(dict_other[hash_object]).delete()
+                print('delete')
+                sys.stdout.flush()
                 
 
     def validate_list_key(self, list_key:List[str]):
@@ -132,13 +134,17 @@ class Bytessource(object):
         if type_bytessource == 'BytessourceFile':
             from breaker_core.datasource.bytessource_file import BytessourceFile
             return BytessourceFile.from_dict(config, dict_bytessource)
+        elif type_bytessource == 'BytessourceCallback':
+            from breaker_core.datasource.bytessource_callback import BytessourceCallback
+            return BytessourceCallback.from_dict(config, dict_bytessource)
         elif type_bytessource == 'BytessourceS3':
             from breaker_aws.datasource.bytessource_s3 import BytessourceS3
             return BytessourceS3.from_dict(config, dict_bytessource)
         else:
             raise Exception('Uknown type_bytessource: ' + type_bytessource)
 
-
+    def __str__(self):
+        return str(self.to_dict())
 
    
 

@@ -34,8 +34,6 @@ class ServiceJsonqueue(object):
                     raise e
              
 
-
-
             try:
                 response = self.process_request(dict_request['payload_request'])
             except Exception as e:
