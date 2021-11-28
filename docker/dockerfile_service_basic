@@ -19,6 +19,7 @@ RUN pip3 install -e .
 WORKDIR /code/breaker_aws
 RUN pip3 install -e .
 
-# copy config
+
+
 WORKDIR /code/breaker_core/service
 CMD [ "python3", "service_basic.py"]

@@ -22,6 +22,5 @@ class ClientBasic(object):
         dict_request = {}
         dict_request['payload_request'] = dict_request_payload
         dict_request['bytessource_response'] = bytessource_response.to_dict()
-
         self.jsonqueue_request.enqueue(dict_request)
 

@@ -26,9 +26,9 @@ class ServiceJsonqueue(object):
 
 
             try:
-                bytessource_response = Bytessource.from_dict(self.config_breaker, dict_request['bytessource_response'])
+                bytessource_callback = Bytessource.from_dict(self.config_breaker, dict_request['bytessource_callback'])
             except Exception as e:
-                print('Exception while reading request: ' +  str(e))
+                print('Exception while reading bytessource_callback: ' +  str(e))
                 sys.stdout.flush()
                 if self.mode_debug:
                     print('mode_debug')
@@ -36,11 +36,11 @@ class ServiceJsonqueue(object):
              
 
             try:
-                response = self.process_request(dict_request['payload_request'])
+                self.process_request(dict_request['payload_request'])
             except Exception as e:
 
                 print('Exception while processing request: ' + str(e))
-                bytessource_response.write_json(
+                bytessource_callback.write_json(
                     {
                         'was_processed':False,
                         'message':'Exception while processing request: ' + str(e)
