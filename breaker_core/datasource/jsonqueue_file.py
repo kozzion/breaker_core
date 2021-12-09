@@ -42,22 +42,6 @@ class JsonqueueFile(Jsonqueue):
             dict_json = json.load(file)
         os.remove(path_file_json)
         return dict_json
-         
-    def dequeue_blocking(self, timeout_ms:int=-1, *, sleep_increment_ms:int=10) -> dict:
-        while True:
-            dict_json = self.dequeue(self)
-            if not dict_json is None:
-                return dict_json
-            elif timeout_ms == -1:
-                continue
-            elif timeout_ms == 0:
-                return None
-            elif (timeout_ms <= sleep_increment_ms):
-                timeout_ms = 0
-                time.sleep(timeout_ms)
-            else:
-                timeout_ms -= sleep_increment_ms
-                time.sleep(sleep_increment_ms)
                 
     @staticmethod
     def str_random(size:int):

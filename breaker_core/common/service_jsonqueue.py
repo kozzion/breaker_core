@@ -15,14 +15,12 @@ class ServiceJsonqueue(object):
     def run(self):
         count_sleep = 0
         while True:
-            dict_request = self.queue_request.dequeue()
+            dict_request = self.queue_request.dequeue_blocking(timeout_ms=5000)
             while dict_request == None:
                 count_sleep += 1
-                dict_request = self.queue_request.dequeue()
-                time.sleep(0.1)
-                if count_sleep % 10 == 0:
-                    print('sleep ' + str(count_sleep))
-                    sys.stdout.flush()
+                print('sleep ' + str(count_sleep))
+                sys.stdout.flush()
+                dict_request = self.queue_request.dequeue_blocking(timeout_ms=5000)
 
 
             try:
