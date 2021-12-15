@@ -3,6 +3,7 @@ import base64
 import requests
 from pathlib import Path
 
+from typing import List
 from breaker_core.datasource.bytessource import Bytessource
 
 class BytessourceHttp(Bytessource):
@@ -23,16 +24,16 @@ class BytessourceHttp(Bytessource):
     def delete(self) -> None:
         raise RuntimeError('bytessource is static readonly')
             
-    def join(self, list_key:list[str]) -> Bytessource:
+    def join(self, list_key:List[str]) -> Bytessource:
         raise RuntimeError('bytessource is static readonly')
 
-    def list_shallow(self, prefix='') -> list[list[str]]:
+    def list_shallow(self, prefix='') -> List[List[str]]:
         raise RuntimeError('bytessource is static readonly')
 
-    def list_deep(self, prefix='') -> list[list[str]]:
+    def list_deep(self, prefix='') -> List[List[str]]:
         raise RuntimeError('bytessource is static readonly')
 
-    def list_for_prefix(self, list_key_prefix:list[str]) -> list[list[str]]:
+    def list_for_prefix(self, list_key_prefix:List[str]) -> List[List[str]]:
         raise RuntimeError('bytessource is static readonly')
 
     def to_dict(self) -> 'dict':

@@ -2,12 +2,14 @@ import os
 import base64
 import requests
 from pathlib import Path
+from typing import List
+from typing import Dict
 
 from breaker_core.datasource.bytessource import Bytessource
 
 class BytessourceCallback(Bytessource):
 
-    def __init__(self, config:dict, url_callback) -> None:
+    def __init__(self, config:Dict, url_callback) -> None:
         super().__init__(config)
         self.url_callback = url_callback
 
@@ -17,7 +19,7 @@ class BytessourceCallback(Bytessource):
     def write(self, bytearray_object:bytearray) -> None:
         raise RuntimeError('bytessource is static writeonly')
 
-    def write_json(self, dict_json:'dict') -> None:
+    def write_json(self, dict_json:Dict) -> None:
         requests.post(self.url_callback, json=dict_json)
 
     def read(self) -> bytearray:
@@ -26,16 +28,16 @@ class BytessourceCallback(Bytessource):
     def delete(self) -> None:
         raise RuntimeError('bytessource is static writeonly')
             
-    def join(self, list_key:list[str]) -> Bytessource:
+    def join(self, list_key:List[str]) -> Bytessource:
         raise RuntimeError('bytessource is static writeonly')
 
-    def list_shallow(self, prefix='') -> list[list[str]]:
+    def list_shallow(self, prefix='') -> List[List[str]]:
         raise RuntimeError('bytessource is static writeonly')
 
-    def list_deep(self, prefix='') -> list[list[str]]:
+    def list_deep(self, prefix='') -> List[List[str]]:
         raise RuntimeError('bytessource is static writeonly')
 
-    def list_for_prefix(self, list_key_prefix:list[str]) -> list[list[str]]:
+    def list_for_prefix(self, list_key_prefix:List[str]) -> List[List[str]]:
         raise RuntimeError('bytessource is static writeonly')
 
     def to_dict(self) -> 'dict':

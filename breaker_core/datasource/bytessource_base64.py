@@ -2,11 +2,14 @@ import os
 import base64
 from pathlib import Path
 
+from typing import List
+from typing import Dict
+
 from breaker_core.datasource.bytessource import Bytessource
 
 class BytessourceBase64(Bytessource):
 
-    def __init__(self, config:dict, str_base64) -> None:
+    def __init__(self, config:Dict, str_base64) -> None:
         super().__init__(config)
         self.str_base64 = str_base64
 
@@ -22,16 +25,16 @@ class BytessourceBase64(Bytessource):
     def delete(self) -> None:
         raise RuntimeError('bytessource is static readonly')
             
-    def join(self, list_key:list[str]) -> Bytessource:
+    def join(self, list_key:List[str]) -> Bytessource:
         raise RuntimeError('bytessource is static readonly')
 
-    def list_shallow(self, prefix='') -> list[list[str]]:
+    def list_shallow(self, prefix='') -> List[List[str]]:
         raise RuntimeError('bytessource is static readonly')
 
-    def list_deep(self, prefix='') -> list[list[str]]:
+    def list_deep(self, prefix='') -> List[List[str]]:
         raise RuntimeError('bytessource is static readonly')
 
-    def list_for_prefix(self, list_key_prefix:list[str]) -> list[list[str]]:
+    def list_for_prefix(self, list_key_prefix:List[str]) -> List[List[str]]:
         raise RuntimeError('bytessource is static readonly')
 
     def to_dict(self) -> 'dict':

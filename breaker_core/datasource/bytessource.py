@@ -5,10 +5,11 @@ import sys
 import tempfile
 from pathlib import Path
 from typing import List
+from typing import Dict
 
 class Bytessource(object):
 
-    def __init__(self, config:dict) -> None:
+    def __init__(self, config:Dict) -> None:
         super().__init__()
         self.config = config
 
@@ -31,13 +32,13 @@ class Bytessource(object):
             path_file = Path(file.name)
         return path_file
         
-    def write_json(self, dict_object:'dict') -> 'dict':
+    def write_json(self, dict_object:Dict) -> 'dict':
         return self.write(json.dumps(dict_object).encode('utf-8'))
 
     def read_pickle(self) -> 'dict':
         return pickle.loads(self.read())
 
-    def write_pickle(self, dict_object:'dict') -> 'dict':
+    def write_pickle(self, dict_object:Dict) -> 'dict':
         return self.write(pickle.dumps(dict_object))
 
     def delete(self) -> None:

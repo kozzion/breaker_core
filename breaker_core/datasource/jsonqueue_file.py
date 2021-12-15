@@ -5,6 +5,7 @@ import random
 import string
 
 from pathlib import Path
+from typing import List
 
 from breaker_core.datasource.jsonqueue import Jsonqueue
 
