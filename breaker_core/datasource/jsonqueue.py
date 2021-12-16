@@ -25,15 +25,14 @@ class Jsonqueue:
             elif timeout_ms == 0:
                 return None
             elif (timeout_ms <= sleep_increment_ms):
-                timeout_ms = 0
                 time.sleep(timeout_ms / 1000)
+                timeout_ms = 0
             else:
-                timeout_ms -= sleep_increment_ms
                 time.sleep(sleep_increment_ms / 1000)
+                timeout_ms -= sleep_increment_ms
 
     def enqueue(self, dict:'dict') -> None:
         raise NotImplementedError()
-
 
     def to_dict(self):
         raise NotImplementedError()

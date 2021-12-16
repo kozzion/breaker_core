@@ -40,8 +40,8 @@ class ServiceJsonqueue(object):
                 print('Exception while processing request: ' + str(e))
                 bytessource_update.write_json(
                     {
-                        'was_processed':False,
-                        'message':'Exception while processing request: ' + str(e)
+                        'status':'failed',
+                        'message':'Exception while processing request: ' + str(e),              
                 })
                 if self.mode_debug:
                     print('mode_debug')
