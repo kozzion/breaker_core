@@ -1,5 +1,6 @@
 import sys
 import time
+import traceback
 
 from breaker_core.datasource.jsonqueue import Jsonqueue
 from breaker_core.datasource.bytessource import Bytessource
@@ -26,6 +27,8 @@ class ServiceJsonqueue(object):
             try:
                 bytessource_update = Bytessource.from_dict(self.config_breaker, dict_request['bytessource_update'])
             except Exception as e:
+                print(traceback.format_exc())
+                sys.stdout.flush()
                 print('Exception while reading bytessource_update: ' +  str(e))
                 sys.stdout.flush()
                 if self.mode_debug:
@@ -36,7 +39,8 @@ class ServiceJsonqueue(object):
             try:
                 self.process_request(dict_request)
             except Exception as e:
-
+                print(traceback.format_exc())
+                sys.stdout.flush()
                 print('Exception while processing request: ' + str(e))
                 bytessource_update.write_json(
                     {

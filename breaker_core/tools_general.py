@@ -61,7 +61,30 @@ class ManagedThread(object):
     def join(self):
         self.thread.join()
 
-class ToolsGeneral(object):    
+class ToolsGeneral(object):  
+
+
+        
+    @staticmethod
+    def create_id(prefix):
+        return prefix + '-' + ToolsGeneral.random_string(16)
+
+    @staticmethod
+    def id_instance_index(list_index, list_count_digit):
+        return ToolsGeneral.id_spaced('in', list_index, list_count_digit)
+
+    @staticmethod
+    def id_spaced(prefix, list_index, list_count_digit):
+        id = prefix
+        for index, count_digit in zip(list_index, list_count_digit):
+            id += '-' + ToolsGeneral.index_spaced(index, count_digit)
+        return id
+
+    @staticmethod
+    def index_spaced(index, count_digit):
+        str_index = str(index)
+        return ('0' * (count_digit - len(str_index))) + str_index
+          
    
     @staticmethod
     def complete_list_runnable(list_runnable, count_thread=10, report_progress=False):
@@ -82,28 +105,30 @@ class ToolsGeneral(object):
             thread.join()
 
     @staticmethod
-    def md5_for_file(path_file):
+    def md5_file(path_file):
         hash_md5 = hashlib.md5()
         with open(path_file, "rb") as file:
             for chunk in iter(lambda: file.read(4096), b""):
                 hash_md5.update(chunk)
         return hash_md5.hexdigest()
 
+
     @staticmethod
-    def array_to_stringbase64(array):
+    def sha256_dict_json(dict_json:dict) -> 'str':
+        return hashlib.sha256(json.dumps(dict_json).encode('utf-8')).hexdigest()
+
+    @staticmethod
+    def array_to_stringbase64(array) -> str:
         return base64.b64encode(pkl.dumps(array)).decode('utf-8')
 
     @staticmethod
-    def stringbase64_to_array(stringbase64_array):
+    def stringbase64_to_array(stringbase64_array:str):
         return pkl.loads(base64.b64decode(stringbase64_array), encoding='utf-8')
 
     @staticmethod
-    def random_string(length):
+    def random_string(length:int) -> 'str':
         return ''.join(random.choice(string.ascii_letters) for i in range(length))
-        
-    @staticmethod
-    def create_id(prefix):
-        return prefix + '-' + ToolsGeneral.random_string(16)
+
 
     # @staticmethod
     # def zip_dir(path_file_zip, path_file_source):
@@ -126,18 +151,7 @@ class ToolsGeneral(object):
             if value < bin_limit:
                 return index
         return len(list_bin_limit)
-
-
-
-    @staticmethod
-    def url_get_extension(url):
-       return urlparse(url).path.split('.')[-1]
-        
-# o = urlparse('http://www.cwi.nl:80/%7Eguido/Python.html')
-# o   
-# ParseResult(scheme='http', netloc='www.cwi.nl:80', path='/%7Eguido/Python.html',
-#             params='', query='', fragment='')
-    
+  
     @staticmethod
     def str_is_int(str_value:str):
         try:
@@ -146,7 +160,24 @@ class ToolsGeneral(object):
         except ValueError:
             return False
 
+    #
+    #WEBSECTION
+    #
+    @staticmethod
+    def url_get_extension(url):
+       return urlparse(url).path.split('.')[-1]
     
     @staticmethod
-    def sha256_dict_json(dict_json:dict) -> 'str':
-        return hashlib.sha256(json.dumps(dict_json).encode('utf-8')).hexdigest()
+    def create_response_json(status_code, json_response):
+        # json_response['name_version'] = os.getenv('name_version', 'default')
+        # json_response['time_version'] = os.getenv('time_version', '0')
+        return {
+            'statusCode': status_code,
+            'headers': {
+                'Vary': 'Origin',
+                'Access-Control-Allow-Origin': '*',
+                'Access-Control-Allow-Headers': 'Content-Type',
+                'Access-Control-Allow-Methods': 'OPTIONS,POST'
+            },
+            'body': json.dumps(json_response)
+        }
