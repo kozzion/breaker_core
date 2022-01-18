@@ -181,3 +181,9 @@ class ToolsGeneral(object):
             },
             'body': json.dumps(json_response)
         }
+
+
+    @staticmethod
+    def check_type(object, type):
+        if not isinstance(object, type):
+            raise ValueError('Expected: ' + str(type) + ' got: ' + str(type(object)))
