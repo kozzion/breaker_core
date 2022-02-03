@@ -2,7 +2,7 @@ import numpy as np
 
 from breaker_core.model.a_model import AModel
 
-class CalibratorRepeat(AModel):
+class ModelRepeat(AModel):
 
     def __init__(self, 
             model_0:AModel, 

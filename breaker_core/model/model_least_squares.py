@@ -16,4 +16,4 @@ class ModelLeastSquares(AModelLinear):
             array_output = matrix_output_true[:,i]
             array_calibration, error, rank, sing = np.linalg.lstsq(matrix_input, array_output, rcond=None)
             list_array_calibration.append(array_calibration)
-        self.matrix_calibration = np.vstack(list_array_calibration).transpose()
+        self.matrix_transform = np.vstack(list_array_calibration).transpose()
