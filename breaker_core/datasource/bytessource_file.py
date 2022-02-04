@@ -8,7 +8,13 @@ class BytessourceFile(Bytessource):
     def __init__(self, config:dict, path_dir_root:Path, list_key:List[str]=[]) -> None:
         super().__init__(config)
         self.validate_list_key(list_key)
-        self.path_dir_root = path_dir_root
+        if  isinstance(path_dir_root, str):
+            self.path_dir_root = Path(path_dir_root)
+        elif isinstance(path_dir_root, Path):
+            self.path_dir_root = path_dir_root
+        else:
+            raise Exception('illegal type: ' + type(path_dir_root))
+
         self.list_key = list_key
         self.path = self.path_dir_root
         for key in list_key:

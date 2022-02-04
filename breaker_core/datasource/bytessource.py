@@ -32,8 +32,12 @@ class Bytessource(object):
             path_file = Path(file.name)
         return path_file
         
-    def write_json(self, dict_object:Dict) -> 'dict':
-        return self.write(json.dumps(dict_object).encode('utf-8'))
+    def write_json(self, dict_object:Dict) -> 'None':
+        self.write(json.dumps(dict_object).encode('utf-8'))
+
+    def write_file(self, path_file:str) -> 'None':
+        with open(path_file, 'rb') as file:
+            self.write(file.read())
 
     def read_pickle(self) -> 'dict':
         return pickle.loads(self.read())
@@ -138,11 +142,14 @@ class Bytessource(object):
         elif type_bytessource == 'BytessourceCallback':
             from breaker_core.datasource.bytessource_callback import BytessourceCallback
             return BytessourceCallback.from_dict(config, dict_bytessource)
+        elif type_bytessource == 'BytessourcePrint':
+            from breaker_core.datasource.bytessource_print import BytessourcePrint
+            return BytessourcePrint.from_dict(config, dict_bytessource)
         elif type_bytessource == 'BytessourceS3':
             from breaker_aws.datasource.bytessource_s3 import BytessourceS3
             return BytessourceS3.from_dict(config, dict_bytessource)
         else:
-            raise Exception('Uknown type_bytessource: ' + type_bytessource)
+            raise Exception('Unknown type_bytessource: ' + type_bytessource)
 
     def __str__(self):
         return str(self.to_dict())

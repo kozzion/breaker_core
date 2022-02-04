@@ -6,11 +6,11 @@ class Jsonqueue:
         super().__init__()
         self.config = config
 
-    # def capacity(self) -> int:
-    #     raise NotImplementedError()
-
-    # def count(self) -> int:
-    #     raise NotImplementedError()
+    def exists(self) -> bool:
+        raise NotImplementedError()
+    
+    def create(self) -> None:
+        raise NotImplementedError()
 
     def dequeue(self) -> 'dict':
         raise NotImplementedError()
