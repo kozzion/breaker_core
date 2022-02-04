@@ -13,7 +13,7 @@ class ToolsFfmpeg(object):
     def video_extract_frames_jpg(path_file_video:str, path_dir_frame:str):
         ff = FFmpeg(
             inputs={os.path.abspath(path_file_video): None},
-            outputs={os.path.abspath(path_dir_frame) + '\%08d.jpg': []})
+            outputs={os.path.abspath(path_dir_frame) + os.sep + 'frame%08d.jpg': []})
 
         print(ff.cmd)
         ff.run()
@@ -21,7 +21,7 @@ class ToolsFfmpeg(object):
     @staticmethod
     def video_merges_frames_jpg(path_file_video:str, path_dir_frame:str):
         ff = FFmpeg(
-            inputs={os.path.abspath(path_dir_frame) + '\%08d.jpg': []},
+            inputs={os.path.abspath(path_dir_frame) + os.sep + 'frame%08d.jpg': []},
             outputs={os.path.abspath(path_file_video): None})
 
         print(ff.cmd)
