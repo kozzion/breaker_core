@@ -11,6 +11,12 @@ class ToolsFfmpeg(object):
 
     @staticmethod
     def video_extract_frames_jpg(path_file_video:str, path_dir_frame:str):
+        if os.path.isdir(path_dir_frame):
+            if 0 < len(os.listdir(path_dir_frame)):
+                raise Exception('Frame dir exists and contains files')
+        else:
+            os.makedirs(path_dir_frame)
+            
         ff = FFmpeg(
             inputs={os.path.abspath(path_file_video): None},
             outputs={os.path.abspath(path_dir_frame) + os.sep + 'frame%08d.jpg': []})
@@ -20,6 +26,8 @@ class ToolsFfmpeg(object):
 
     @staticmethod
     def video_merges_frames_jpg(path_file_video:str, path_dir_frame:str):
+        if os.path.isfile(path_file_video):
+            os.remove(path_file_video)
         ff = FFmpeg(
             inputs={os.path.abspath(path_dir_frame) + os.sep + 'frame%08d.jpg': []},
             outputs={os.path.abspath(path_file_video): None})
@@ -29,6 +37,14 @@ class ToolsFfmpeg(object):
 
     @staticmethod
     def video_merges_frames_jpg2(path_file_video:str, path_dir_frame:str):
+        if os.path.isfile(path_file_video):
+            os.remove(path_file_video)
+
+        if os.path.isdir(path_dir_frame):
+            if 0 == len(os.listdir(path_dir_frame)):
+                raise Exception('Frame dir exists but contains no files')
+        else:
+            raise Exception('Frame dir does not exist')
         p = Popen(['ffmpeg', '-y', '-f', 'image2pipe', '-vcodec', 'mjpeg', '-r', '24', '-i', '-', '-vcodec', 'h264', '-qscale', '5', '-r', '24', os.path.abspath(path_file_video)], stdin=PIPE)
 
         video = cv2.VideoCapture('videos.mp4')

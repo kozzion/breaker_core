@@ -130,16 +130,16 @@ class ToolsGeneral(object):
         return ''.join(random.choice(string.ascii_letters) for i in range(length))
 
 
-    # @staticmethod
-    # def zip_dir(path_file_zip, path_file_source):
-    #     with zipfile.ZipFile(path_file_zip, "w") as zip_reference:
-    #         for name_file in os.listdir(path_dir_function):
-    #             path_file_source = os.path.join(path_dir_function, name_file)
-    #             zip_reference.write(path_file_source, name_file)
+    @staticmethod
+    def zip_dir(path_file_zip:str, path_dir:str) -> None:
+        with zipfile.ZipFile(path_file_zip, "w") as zip_reference:
+            for name_file in os.listdir(path_dir):
+                path_file_source = os.path.join(path_dir, name_file)
+                zip_reference.write(path_file_source, name_file)
 
 
     @staticmethod
-    def unzip_dir(path_file_zip, path_dir_target):
+    def unzip_dir(path_file_zip:str, path_dir_target:str) -> None:
         with zipfile.ZipFile(path_file_zip, 'r') as zip_reference:
             zip_reference.extractall(path_dir_target)
   
